@@ -1,0 +1,251 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: white;
+}
+
+
+/* Container for the Blackjack Table */
+#blackjack-container {
+    position: relative;
+    width: 1094px;
+    height: 800px;
+    margin: 0 auto;
+    background-color: black;
+}
+
+/* Green Felt Background */
+#table-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('/src/assets/images/table_background.png') no-repeat center center;
+    background-size: cover;
+    z-index: 1;
+}
+
+/* Table UI Overlay */
+#table-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('/src/assets/images/table_ui_base.png') no-repeat center center;
+    background-size: contain;
+    z-index: 2;
+}
+
+
+/* Betting Info Section */
+#betting-info {
+    position: absolute;
+    width: 100%;
+    z-index: 3;
+}
+
+#bet-value {
+    position: absolute;
+    bottom: 125px;
+    left: 80px;
+    color: #fce76c;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+#balance-value {
+    position: absolute;
+    bottom: 90px;
+    left: 80px;
+    color: #fce76c;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+#won-value {
+    position: absolute;
+    bottom: 125px;
+    right: 100px;
+    color: #fce76c;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+#bet-amount-display {
+    position: absolute;
+    bottom: 150px; /* Adjust to align with the "Bet" field in the overlay */
+    left: 170px; /* Position relative to "Bet" */
+    color: #fce76c; /* Gold color to match the UI */
+    font-size: 1.4rem; /* Match size of text in the overlay */
+    font-weight: bold;
+}
+
+#bet-and-balance {
+    position: absolute;
+    bottom: 138px; /* Align with the Bet and Balance fields */
+    left: 150px;
+    z-index: 5; /* Ensure it’s above the background layers */
+    color: #fce76c; /* Match the gold text */
+    font-size: 1.4rem;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#bet-display {
+    margin-bottom: 10px; /* Spacing between Bet and Balance */
+}
+
+#balance-display {
+    margin-bottom: 10px;
+}
+
+/* Game Area (Main Container for Cards) */
+#game-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}
+
+/* Dealer Hand Container */
+#dealer-hand-container {
+    position: absolute;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#dealer-hand {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Player Hand Container */
+#player-hand-container {
+    position: absolute;
+    bottom: 270px !important;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#player-hand {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+
+/* Card Styles */
+.card {
+    width: 70px;
+    height: 100px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Controls Section */
+#controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+    z-index: 3;
+}
+
+/* Casino Chips */
+#chip-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between chip buttons */
+    margin-bottom: 120px; /* Add space below the chips */
+}
+
+
+.chip {
+    width: 50px;
+    height: 50px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.chip:hover {
+    transform: scale(1.1); /* Enlarge on hover */
+}
+
+/* Individual chip styles */
+#chip-5 {
+    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_5.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#chip-10 {
+    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_10.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#chip-25 {
+    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_25.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#chip-50 {
+    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_50.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#chip-100 {
+    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_100.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/* Circle Buttons: Shared Styles */
+#circle-button-container {
+    display: flex;
+    justify-content: space-evenly; /* Evenly space the buttons */
+    align-items: center;
+    width: 100%;
+    position: absolute; /* Anchor to the bottom */
+    bottom: -20px;
+    left: 0;
+    z-index: 3; /* Ensure it’s above the background */
+}
+
+#circle-button-container img {
+    width: 80px; /* Set uniform button size */
+    height: 80px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    object-fit: contain; /* Fit images proportionally */
+}
+
+/* Hover Effect */
+#circle-button-container img:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+
+
+
+
+
+
