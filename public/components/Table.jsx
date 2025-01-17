@@ -375,31 +375,31 @@ export default function Table() {
         <img
             id="chip-5"
             className="chip"
-            src="/Users/kyleguadagno/dev/blackjack-react/public/assets/icons/CHIPS/Casino_Roulette_Chips_5.png"
+            src="/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_5.png"
             onClick={() => handlePlaceBet(5)}
         />
         <img
             id="chip-10"
             className="chip"
-            src="/Users/kyleguadagno/dev/blackjack-react/public/assets/icons/CHIPS/Casino_Roulette_Chips_10.png"
+            src="/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_10.png"
             onClick={() => handlePlaceBet(10)}
         />
         <img
             id="chip-25"
             className="chip"
-            src="/Users/kyleguadagno/dev/blackjack-react/public/assets/icons/CHIPS/Casino_Roulette_Chips_25.png"
+            src="/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_25.png"
             onClick={() => handlePlaceBet(25)}
         />
         <img
             id="chip-50"
             className="chip"
-            src="/Users/kyleguadagno/dev/blackjack-react/public/assets/icons/CHIPS/Casino_Roulette_Chips_50.png"
+            src="/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_50.png"
             onClick={() => handlePlaceBet(50)}
         />
         <img
             id="chip-100"
             className="chip"
-            src="/Users/kyleguadagno/dev/blackjack-react/public/assets/icons/CHIPS/Casino_Roulette_Chips_100.png"
+            src="/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_100.png"
             onClick={() => handlePlaceBet(100)}
         />
     </div>
@@ -408,19 +408,19 @@ export default function Table() {
     <div id="circle-button-container">
         <img
             id="clear-bet"
-            src="/public/assets/icons/INTERFACE/clear_bets_off.png"
+            src="/src/assets/icons/INTERFACE/clear_bets_off.png"
             alt="Clear Bet"
             onClick={() => setCurrentBet(0)}
         />
         <img
             id="deal"
-            src="/public/assets/icons/INTERFACE/deal_off.png"
+            src="/src/assets/icons/INTERFACE/deal_off.png"
             alt="Deal"
             onClick={dealCards}
         />
         <img
             id="hit"
-            src="/public/assets/icons/INTERFACE/hit_button_off.png"
+            src="/src/assets/icons/INTERFACE/hit_button_off.png"
             alt="Hit"
             onClick={handleHit}
             style={{ cursor: "pointer" }}
@@ -428,19 +428,19 @@ export default function Table() {
 
         <img
             id="stand"
-            src="/public/assets/icons/INTERFACE/stand_button_off.png"
+            src="/src/assets/icons/INTERFACE/stand_button_off.png"
             alt="Stand"
             onClick={moveToNextHand}
         />
         <img
             id="double"
-            src="/public/assets/icons/INTERFACE/double_off.png"
+            src="/src/assets/icons/INTERFACE/double_off.png"
             alt="Double"
             onClick={handleDoubleDown}
         />
         <img
             id="split"
-            src="/public/assets/icons/INTERFACE/split_off.png"
+            src="/src/assets/icons/INTERFACE/split_off.png"
             alt="Split"
             onClick={handleSplit}
             style={{ cursor: splitAllowed ? "pointer" : "not-allowed", opacity: splitAllowed ? 1 : 0.5 }}

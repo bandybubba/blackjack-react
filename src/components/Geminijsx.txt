@@ -1,0 +1,340 @@
+import React, { useState } from 'react';
+import "./Table.css";
+import Card from "./Card"; 
+
+export default function Table() {
+    // Game states
+    const [gameStage, setGameStage] = useState("Bet");
+    const [playerHand, setPlayerHand] = useState([]); 
+    const [dealerHand, setDealerHand] = useState([]);
+    const [activeHandIndex, setActiveHandIndex] = useState(0); 
+    const [deck, setDeck] = useState(createDeck());
+    const [playerBalance, setPlayerBalance] = useState(1000);
+    const [currentBet, setCurrentBet] = useState(0);
+    const [splitAllowed, setSplitAllowed] = useState(false);
+
+    // Function to create and shuffle a deck
+    function createDeck() { 
+        const suits = ["hearts", "diamonds", "clubs", "spades"];
+        const ranks = ["a", "2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k"];
+        let newDeck = [];
+        suits.forEach((suit) => {
+            ranks.forEach((rank) => {
+                newDeck.push({ rank, suit });
+            });
+        });
+        return shuffleDeck(newDeck);
+    }
+
+    function shuffleDeck(deck) {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        return deck;
+    }
+
+    const dealCards = () => {
+        if (currentBet === 0) {
+            alert("Place a bet first!");
+            return;
+        }
+
+        const newDeck = [...deck];
+        const newPlayerHand = [newDeck.pop(), newDeck.pop()];
+        const newDealerHand = [
+            newDeck.pop(),
+            { rank: "", suit: "back", originalRank: newDeck[newDeck.length - 1].rank, originalSuit: newDeck[newDeck.length - 1].suit },
+        ];
+
+        setDeck(newDeck);
+        setPlayerHand([newPlayerHand]); 
+        setDealerHand(newDealerHand);
+        setGameStage("PlayHand");
+
+        setSplitAllowed(true); 
+    };
+
+    const handleSplit = () => {
+        if (!splitAllowed || playerHand.length > 1) return; 
+
+        const originalHand = playerHand[0];
+        if (originalHand[0].rank !== originalHand[1].rank) {
+            alert("Cards must be the same rank to split!");
+            return;
+        }
+
+        if (playerBalance < currentBet) {
+            alert("Not enough balance to split!");
+            return;
+        }
+
+        const newDeck = [...deck];
+        const splitHands = [
+            [originalHand[0], newDeck.pop()], 
+            [originalHand[1], newDeck.pop()], 
+        ];
+
+        setDeck(newDeck);
+        setPlayerHand(splitHands); 
+        setPlayerBalance((prev) => prev - currentBet); 
+        setActiveHandIndex(0);
+        setSplitAllowed(false); 
+    };
+
+    const handleHit = () => {
+        if (gameStage !== "PlayHand") return; 
+
+        const hand = [...playerHand[activeHandIndex]];
+        const newDeck = [...deck];
+
+        if (newDeck.length === 0) {
+            alert("Deck is empty! Reshuffling...");
+            setDeck(createDeck());
+            return;
+        }
+
+        hand.push(newDeck.pop());
+
+        const updatedHands = [...playerHand]; 
+        updatedHands[activeHandIndex] = hand; 
+
+        setDeck(newDeck);
+        setPlayerHand(updatedHands);
+
+        const handValue = calculateHandValue(hand);
+
+        if (handValue === 21) {
+            alert(`Hand ${activeHandIndex + 1} hits 21!`); 
+            moveToNextHand();
+        } else if (handValue > 21) {
+            alert(`Hand ${activeHandIndex + 1} busts!`);
+            moveToNextHand();
+        }
+    };
+
+    const moveToNextHand = () => {
+        if (activeHandIndex < playerHand.length - 1) {
+            setActiveHandIndex(activeHandIndex + 1); 
+        } else {
+            setGameStage("ConcludeHands"); 
+            playDealerTurn();
+        }
+    };
+
+    const playDealerTurn = async () => {
+        let newDealerHand = [...dealerHand];
+        let newDeck = [...deck];
+
+        newDealerHand[1] = {
+            rank: newDealerHand[1].originalRank,
+            suit: newDealerHand[1].originalSuit,
+        };
+        setDealerHand(newDealerHand);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000)); 
+
+        while (calculateHandValue(newDealerHand) < 17) {
+            newDealerHand.push(newDeck.pop());
+            setDealerHand([...newDealerHand]);
+            setDeck(newDeck);
+
+            await new Promise((resolve) => setTimeout(resolve, 1000)); 
+        }
+
+        resolveGame(newDealerHand, playerHand); // Use playerHand instead of playerHands
+    };
+
+    const resolveGame = (dealerHand, playerHand) => { // Use playerHand instead of playerHands
+        const dealerValue = calculateHandValue(dealerHand);
+        const results = playerHand.map((hand) => { // Use playerHand instead of playerHands
+            const playerValue = calculateHandValue(hand);
+
+            if (playerValue > 21) {
+                return "Bust"; 
+            }
+            if (dealerValue > 21) {
+                setPlayerBalance((prev) => prev + currentBet * 2); 
+                return "Win";
+            }
+            if (playerValue > dealerValue) {
+                setPlayerBalance((prev) => prev + currentBet * 2);
+                return "Win";
+            }
+            if (playerValue < dealerValue) {
+                return "Lose"; 
+            }
+            setPlayerBalance((prev) => prev + currentBet);
+            return "Push";
+        });
+
+        alert(`Game Results: ${results.join(", ")}`); // Consider using updateStatus here
+        resetGame();
+    };
+
+    const handlePlaceBet = (amount) => {
+        if (playerBalance >= amount) {
+            setPlayerBalance(playerBalance - amount);
+            setCurrentBet(currentBet + amount);
+        } else {
+            // Use updateStatus instead of alert:
+            updateStatus("Not enough balance!"); 
+        }
+    };
+
+    const resetGame = () => {
+        setGameStage("Bet");
+        setPlayerHand([[]]); 
+        setDealerHand([]);
+        setActiveHandIndex(0); 
+        setDeck(createDeck());
+        setCurrentBet(0);
+        setSplitAllowed(false);
+    };
+
+    const updateStatus = (message) => {
+        // You'll need to implement this function to display the message in your UI
+        // For example, you could update a state variable that holds the message
+        // and then display it in your JSX
+        console.log(message); // Placeholder - replace with your actual implementation
+    };
+
+    const calculateHandValue = (hand) => {
+        let value = 0;
+        let aces = 0;
+
+        hand.forEach((card) => {
+            if (card.rank === "a") {
+                value += 11;
+                aces++;
+            } else if (["k", "q", "j"].includes(card.rank)) {
+                value += 10;
+            } else {
+                value += parseInt(card.rank, 10);
+            }
+        });
+
+        while (value > 21 && aces > 0) {
+            value -= 10;
+            aces--;
+        }
+
+        return value;
+    };
+
+    return (
+        <div id="blackjack-container">
+            {/* Backgrounds */}
+            <div id="table-background"></div>
+            <div id="table-overlay"></div>
+
+            {/* Display Bet and Balance */}
+            <div id="bet-and-balance">
+                <div id="bet-display">{currentBet}</div>
+                <div id="balance-display">{playerBalance}</div>
+            </div>
+
+            {/* Game Area */}
+            <div id="game-area">
+                {/* Dealer Hand */}
+                <div id="dealer-hand-container">
+                    <div id="dealer-hand">
+                        {dealerHand.map((card, index) => (
+                            <Card key={index} {...card} /> 
+                        ))}
+                    </div>
+                </div>
+
+                <div id="score-display">
+                    <div id="player-score">
+                        Player Score: {playerHand[activeHandIndex] && calculateHandValue(playerHand[activeHandIndex])}
+                    </div>
+                    <div id="dealer-score">
+                        Dealer Score: {gameStage === "ConcludeHands" && calculateHandValue(dealerHand)}
+                    </div>
+                </div>
+
+                {/* Player Hands */}
+                {playerHand.map((hand, handIndex) => ( // Use playerHand instead of playerHands
+                    <div
+                        key={handIndex}
+                        id={`player-hand-container-${handIndex}`}
+                        style={{
+                            position: "absolute",
+                            bottom: handIndex === 0 ? "220px" : "180px", 
+                            left: handIndex === 0 ? "50%" : "70%", 
+                            transform: "translateX(-50%)",
+                        }}
+                    >
+                        <div id={`player-hand-${handIndex}`}>
+                            {hand.map((card, index) => (
+                                <Card key={index} {...card} />
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Controls */}
+            <div id="controls">
+                {/* Betting Chip Buttons */}
+                <div id="chip-container">
+                    <button id="chip-5" className="chip" onClick={() => handlePlaceBet(5)}></button>
+                    <button id="chip-10" className="chip" onClick={() => handlePlaceBet(10)}></button>
+                    <button id="chip-25" className="chip" onClick={() => handlePlaceBet(25)}></button>
+                    <button id="chip-50" className="chip" onClick={() => handlePlaceBet(50)}></button>
+                    <button id="chip-100" className="chip" onClick={() => handlePlaceBet(100)}></button>
+                </div>
+
+                {/* Circle Buttons */}
+                <div id="circle-button-container">
+                    {/* Circle Buttons */}
+    <div id="circle-button-container">
+        <img
+            id="clear-bet"
+            src="/src/assets/icons/INTERFACE/clear_bets_off.png"
+            alt="Clear Bet"
+            onClick={() => setCurrentBet(0)}
+        />
+        <img
+            id="deal"
+            src="/src/assets/icons/INTERFACE/deal_off.png"
+            alt="Deal"
+            onClick={dealCards}
+        />
+        <img
+    id="hit"
+    src="/src/assets/icons/INTERFACE/hit_button_off.png"
+    alt="Hit"
+    onClick={handleHit} /* Call the function when the button is clicked */
+    style={{ cursor: "pointer" }} /* Ensure it looks interactive */
+    />
+
+<img
+    id="stand"
+    src="/src/assets/icons/INTERFACE/stand_button_off.png"
+    alt="Stand"
+    onClick={moveToNextHand}
+/>
+        <img
+            id="double"
+            src="/src/assets/icons/INTERFACE/double_off.png"
+            alt="Double"
+            onClick={() => alert("Double clicked!")}
+        />
+        <img
+    id="split"
+    src="/src/assets/icons/INTERFACE/split_off.png"
+    alt="Split"
+    onClick={handleSplit}
+    style={{ cursor: splitAllowed ? "pointer" : "not-allowed", opacity: splitAllowed ? 1 : 0.5 }}
+/>
+
+    </div>
+</div>
+                </div>
+            </div>
+        
+    );
+    // ... (Rest of the code - we'll add this in the next sections) ...
+}
