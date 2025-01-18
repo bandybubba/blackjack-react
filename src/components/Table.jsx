@@ -283,8 +283,6 @@ export default function Table() {
             playerResults.forEach((result, i) => {
                 if (result === "Win") {
                     newBalance += bets[i] * 2;
-                } else if (result === "Lose") {
-                    newBalance -= bets[i];
                 } else if (result === "Push") {
                     newBalance += bets[i];
                 }
