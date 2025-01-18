@@ -81,6 +81,9 @@ export default function Table() {
     
             if (playerHasBlackjack && dealerHasBlackjack) {
                 showPopup("Push! Both have Blackjack!");
+                // Refund the bet
+                setPlayerBalance((prev) => prev + bets[0]);
+                resetGame();
             } else if (playerHasBlackjack) {
                 setPlayerBalance((prev) => prev + bets[0] * 2.5); // Blackjack pays 3:2
                 showPopup("Blackjack! You win!");
@@ -135,14 +138,13 @@ export default function Table() {
         setPlayerBalance((prev) => prev - bets[activeHandIndex]);
     
         splitHands.forEach((hand, i) => {
+            // Optional: Check if it's 21 just to inform the player,
+            // but don't pay out or move on immediately:
             if (calculateHandValue(hand) === 21) {
-                setPlayerBalance((prev) => prev + bets[activeHandIndex + i] * 2.5); // Payout
-                showPopup(`Blackjack! Hand ${activeHandIndex + i + 1} wins!`);
-                moveToNextHand(); // Immediately move to the next hand
+                showPopup(`Hand ${activeHandIndex + i + 1} is 21!`);
+                // No immediate payout or "moveToNextHand()"
             }
         });
-        
-        
     };
     
     
@@ -277,7 +279,9 @@ export default function Table() {
                     newBalance += bets[i] * 2;
                 } else if (result === "Lose") {
                     newBalance -= bets[i];
-                }
+                } else if (result === "Push") {
+                    newBalance += bets[i];
+                }                
             });
             return newBalance;
         });
