@@ -7,16 +7,6 @@ body {
     color: white;
 }
 
-#score-display {
-    position: absolute;
-    top: 300px; /* Adjust the top position as needed */
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: space-around;
-    width: 100%; /* Adjust the width as needed */
-    z-index: 3;
-}
 
 /* ... other styles ... */
 
@@ -26,30 +16,30 @@ body {
 }
 
 .player-score {
-    position: relative; /* Position relative to the card container */
-    top: 10px; /* Adjust position as needed */
+    position: fixed;
+    bottom: -25px; /* Position below the cards */
     left: 50%;
     transform: translateX(-50%);
-    /* Remove background, padding, and border-radius */
     font-size: 1.2rem;
     color: white;
-    z-index: 2; /* Ensure it's above the cards */
+    z-index: 2;
+}
+
+#dealer-score {
+    position: fixed;
+    top: 110px; /* Position above the dealer cards */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    color: white;
+    z-index: 2;
 }
 
 .player-score.active {
     color: yellow; /* Highlight the active hand's score */
 }
 
-#dealer-score {
-    position: absolute; /* Position relative to the dealer cards */
-    top: 100px; /* Adjust position as needed */
-    left: 50%;
-    transform: translateX(-50%);
-    /* Remove text and background */
-    font-size: 1.2rem;
-    color: white;
-    z-index: 2; /* Ensure it's above the cards */
-}
+
 
 /* Container for the Blackjack Table */
 #blackjack-container {
@@ -65,7 +55,7 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: url('/src/assets/images/table_background.png') no-repeat center center;
+    background: url('/public/assets/images/table_background.png') no-repeat center center;
     background-size: cover;
     z-index: 1;
 }
@@ -75,7 +65,7 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: url('/src/assets/images/table_ui_base.png') no-repeat center center;
+    background: url('/public/assets/images/table_ui_base.png') no-repeat center center;
     background-size: contain;
     z-index: 2;
 }
@@ -106,14 +96,23 @@ body {
     font-weight: bold;
 }
 
-#won-value {
+#won-display-container {
     position: absolute;
-    bottom: 125px;
-    right: 100px;
-    color: #fce76c;
-    font-size: 1.5rem;
+    top: 20px; /* Adjust for alignment */
+    right: 50px; /* Place it on the right side */
+    font-size: 1.4rem;
     font-weight: bold;
+    color: #fce76c; /* Gold color for consistency */
+    text-align: right;
 }
+
+#won-display {
+    border: 2px solid #fce76c; /* Optional: Add a border for better visibility */
+    padding: 5px 10px;
+    background-color: rgba(0, 0, 0, 0.8); /* Optional: Add a background */
+    border-radius: 8px; /* Slightly rounded corners */
+}
+
 
 #bet-amount-display {
     position: absolute;
@@ -168,17 +167,32 @@ body {
 }
 
 /* Player Hand Container */
-#player-hand-container {
-    position: absolute;
-    bottom: 270px !important;
-    left: 50%;
-    transform: translateX(-50%);
+.player-hand-container.active {
+    border: 2px solid yellow;
 }
 
-#player-hand {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+.player-score {
+    position: absolute;
+    bottom: 130px; /* Position below the cards */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.9rem;
+    color: rgb(255, 255, 255);
+    z-index: 2;
+}
+
+#dealer-score {
+    position: absolute;
+    top: 75px; /* Position above the dealer cards */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    color: white;
+    z-index: 2;
+}
+
+.player-score.active {
+    color: yellow;
 }
 
 
@@ -239,31 +253,31 @@ body {
 
 /* Individual chip styles */
 #chip-5 {
-    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_5.png');
+    background-image: url('public/assets/icons/CHIPS/Casino_Roulette_Chips_5.png');
     background-size: cover;
     background-repeat: no-repeat;
 }
 
 #chip-10 {
-    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_10.png');
+    background-image: url('public/assets/icons/CHIPS/Casino_Roulette_Chips_10.png');
     background-size: cover;
     background-repeat: no-repeat;
 }
 
 #chip-25 {
-    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_25.png');
+    background-image: url('public/assets/icons/CHIPS/Casino_Roulette_Chips_25.png');
     background-size: cover;
     background-repeat: no-repeat;
 }
 
 #chip-50 {
-    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_50.png');
+    background-image: url('public/assets/icons/CHIPS/Casino_Roulette_Chips_50.png');
     background-size: cover;
     background-repeat: no-repeat;
 }
 
 #chip-100 {
-    background-image: url('/Users/kyleguadagno/dev/blackjack-react/src/assets/icons/CHIPS/Casino_Roulette_Chips_100.png');
+    background-image: url('public/assets/icons/CHIPS/Casino_Roulette_Chips_100.png');
     background-size: cover;
     background-repeat: no-repeat;
 }
