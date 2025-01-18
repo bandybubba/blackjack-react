@@ -15,31 +15,6 @@ body {
     /* Remove the yellow square highlight */
 }
 
-.player-score {
-    position: fixed;
-    bottom: -25px; /* Position below the cards */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.2rem;
-    color: white;
-    z-index: 2;
-}
-
-#dealer-score {
-    position: fixed;
-    top: 110px; /* Position above the dealer cards */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.2rem;
-    color: white;
-    z-index: 2;
-}
-
-.player-score.active {
-    color: yellow; /* Highlight the active hand's score */
-}
-
-
 
 /* Container for the Blackjack Table */
 #blackjack-container {
@@ -173,22 +148,28 @@ body {
 
 .player-score {
     position: absolute;
-    bottom: 130px; /* Position below the cards */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.9rem;
-    color: rgb(255, 255, 255);
-    z-index: 2;
-}
-
-#dealer-score {
-    position: absolute;
-    top: 75px; /* Position above the dealer cards */
+    bottom: 120px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 1.2rem;
     color: white;
     z-index: 2;
+    background-color: rgba(0, 0, 0, 0.5); /* Add background */
+    padding: 5px 10px; /* Add padding */
+    border-radius: 50%; /* Add circular border */
+}
+
+#dealer-score {
+    position: absolute;
+    top: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    color: white;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.5); /* Add background */
+    padding: 5px 10px; /* Add padding */
+    border-radius: 50%; /* Add circular border */
 }
 
 .player-score.active {
@@ -220,11 +201,6 @@ body {
     width: 100%;
     z-index: 3;
 }
-
-/* Casino Chips */
-/* ... other styles ... */
-
-/* ... other styles ... */
 
 #chip-container {
     display: flex;

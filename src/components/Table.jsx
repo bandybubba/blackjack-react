@@ -7,26 +7,26 @@ export default function Table() {
     const [gameStage, setGameStage] = useState("Bet");
     const [playerHands, setPlayerHands] = useState([[]]);  // multiple hands
     const [dealerHand, setDealerHand] = useState([]);
-    const [activeHandIndex, setActiveHandIndex] = useState(0); 
+    const [activeHandIndex, setActiveHandIndex] = useState(0);
     const [deck, setDeck] = useState(createDeck());
     const [playerBalance, setPlayerBalance] = useState(1000);
     const [bets, setBets] = useState([0]);               // one bet per hand
     const [splitAllowed, setSplitAllowed] = useState(false);
     const [popupStatus, setPopupStatus] = useState(null); // Holds the current status (e.g., "blackjackPlayer", "youWin")
     const [isPopupVisible, setIsPopupVisible] = useState(false); // Controls popup visibility
-    
+
     const showPopup = (status) => {
         setPopupStatus(status);
         setIsPopupVisible(true);
         setTimeout(() => {
-        setIsPopupVisible(false);
+            setIsPopupVisible(false);
         }, 3000);
-        };
+    };
 
 
 
     // Function to create and shuffle a deck
-    function createDeck() { 
+    function createDeck() {
         const suits = ["hearts", "diamonds", "clubs", "spades"];
         const ranks = ["a", "2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k"];
         let newDeck = [];
@@ -48,37 +48,37 @@ export default function Table() {
 
     const dealCards = () => {
         if (bets[0] === 0) {
-            alert("Place a bet first!");
+            showPopup("Place a bet first!");
             return;
         }
-    
+
         const newDeck = [...deck];
         const newPlayerHands = [[newDeck.pop(), newDeck.pop()]]; // Updated for multi-hand
         const newDealerHand = [
             newDeck.pop(),
             { rank: "", suit: "back", originalRank: newDeck[newDeck.length - 1].rank, originalSuit: newDeck[newDeck.length - 1].suit },
         ];
-    
+
         setDeck(newDeck);
-        setPlayerHands(newPlayerHands); 
+        setPlayerHands(newPlayerHands);
         setDealerHand(newDealerHand);
         setGameStage("PlayHand");
-        setSplitAllowed(true); 
-    
+        setSplitAllowed(true);
+
         // Immediate blackjack check
         const playerHasBlackjack = calculateHandValue(newPlayerHands[0]) === 21;
         const dealerHasBlackjack = calculateHandValue([
             newDealerHand[0],
             { rank: newDealerHand[1].originalRank, suit: newDealerHand[1].originalSuit },
         ]) === 21;
-    
+
         if (playerHasBlackjack || dealerHasBlackjack) {
             setGameStage("ConcludeHands");
             setDealerHand([
                 newDealerHand[0],
                 { rank: newDealerHand[1].originalRank, suit: newDealerHand[1].originalSuit },
             ]);
-    
+
             if (playerHasBlackjack && dealerHasBlackjack) {
                 showPopup("Push! Both have Blackjack!");
                 // Refund the bet
@@ -93,13 +93,13 @@ export default function Table() {
             resetGame(); // Ends round immediately
         }
     };
-    
+
 
     const handleSplit = () => {
         if (gameStage !== "PlayHand" || playerHands.length > 3) {
             return; // Max of 4 hands (3 splits)
         }
-    
+
         const handToSplit = playerHands[activeHandIndex];
         if (
             handToSplit.length !== 2 ||
@@ -111,32 +111,38 @@ export default function Table() {
                 )
             )
         ) {
-            alert("Cards must be the same rank or both 10-value (10, J, Q, K) to split!");
+            showPopup("Cards must be the same rank or both 10-value (10, J, Q, K) to split!");
             return;
         }
-    
+
         if (playerBalance < bets[activeHandIndex]) {
-            alert("Not enough balance to split!");
+            showPopup("Not enough balance to split!");
             return;
         }
-    
+
         const newDeck = [...deck];
         const splitHands = [
             [handToSplit[0], newDeck.pop()],
             [handToSplit[1], newDeck.pop()],
         ];
-    
+
         const updatedPlayerHands = [...playerHands];
         updatedPlayerHands.splice(activeHandIndex, 1, ...splitHands);
-    
-        const updatedBets = [...bets];
-        updatedBets.splice(activeHandIndex, 1, bets[activeHandIndex], bets[activeHandIndex]);
-    
+
+        const updatedBets = [bets];
+        const numericBet = Number(bets[activeHandIndex]);
+
+        updatedBets.splice(
+            activeHandIndex,
+            1,
+            numericBet
+        );
+
         setDeck(newDeck);
         setPlayerHands(updatedPlayerHands);
         setBets(updatedBets);
         setPlayerBalance((prev) => prev - bets[activeHandIndex]);
-    
+
         splitHands.forEach((hand, i) => {
             // Optional: Check if it's 21 just to inform the player,
             // but don't pay out or move on immediately:
@@ -146,46 +152,46 @@ export default function Table() {
             }
         });
     };
-    
-    
+
+
 
     const handleHit = () => {
         if (gameStage !== "PlayHand") return;
-    
+
         const hand = [...playerHands[activeHandIndex]];
         const newDeck = [...deck];
-    
+
         if (newDeck.length === 0) {
-            // Instead of alert, use updateStatus:
-            updateStatus("Deck is empty! Reshuffling..."); 
+            // Instead of showPopup, use updateStatus:
+            updateStatus("Deck is empty! Reshuffling...");
             setDeck(createDeck());
             return;
         }
-    
+
         hand.push(newDeck.pop());
-    
+
         const updatedHands = [...playerHands];
         updatedHands[activeHandIndex] = hand;
-    
+
         setDeck(newDeck);
         setPlayerHands(updatedHands);
-    
+
         const handValue = calculateHandValue(hand);
-    
+
         if (handValue === 21) {
-            // Instead of alert, use updateStatus:
-            updateStatus(`Hand ${activeHandIndex + 1} hits 21!`); 
+            // Instead of showPopup, use updateStatus:
+            updateStatus(`Hand ${activeHandIndex + 1} hits 21!`);
             moveToNextHand();
         } else if (handValue > 21) {
-            // Instead of alert, use updateStatus:
-            updateStatus(`Hand ${activeHandIndex + 1} busts!`); 
+            // Instead of showPopup, use updateStatus:
+            updateStatus(`Hand ${activeHandIndex + 1} busts!`);
             moveToNextHand();
         }
     };
 
     const moveToNextHand = () => {
         const handValue = calculateHandValue(playerHands[activeHandIndex]);
-    
+
         if (handValue > 21) {
             // If the current hand busts, move to the next hand or end the round
             if (activeHandIndex < playerHands.length - 1) {
@@ -212,20 +218,20 @@ export default function Table() {
         ) {
             return; // Cannot double down in these cases
         }
-    
+
         setPlayerBalance((prevBalance) => prevBalance - bets[activeHandIndex]);
-        
+
         const updatedBets = [...bets];
         updatedBets[activeHandIndex] *= 2; // Double the bet for the active hand
-        setBets(updatedBets);   
-    
+        setBets(updatedBets);
+
         const newDeck = [...deck];
         const updatedHand = [...playerHands[activeHandIndex]];
         updatedHand.push(newDeck.pop());
-    
+
         const updatedPlayerHand = [...playerHands];
         updatedPlayerHand[activeHandIndex] = updatedHand;
-    
+
         setDeck(newDeck);
         setPlayerHands(updatedPlayerHand);
         moveToNextHand();
@@ -241,24 +247,24 @@ export default function Table() {
         };
         setDealerHand(newDealerHand);
 
-        await new Promise((resolve) => setTimeout(resolve, 1000)); 
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         while (calculateHandValue(newDealerHand) < 17) {
             newDealerHand.push(newDeck.pop());
             setDealerHand([...newDealerHand]);
             setDeck(newDeck);
 
-            await new Promise((resolve) => setTimeout(resolve, 1000)); 
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
-        resolveGame(newDealerHand, playerHands); // Use playerHand instead of playerHands
+        resolveGame(newDealerHand, playerHands);
     };
 
     const resolveGame = (dealerHand, playerHands) => {
         const dealerValue = calculateHandValue(dealerHand);
         const playerResults = playerHands.map((hand) => {
             const playerValue = calculateHandValue(hand);
-    
+
             if (playerValue > 21) {
                 return "Bust";
             } else if (dealerValue > 21) {
@@ -271,7 +277,7 @@ export default function Table() {
                 return "Push";
             }
         });
-    
+
         setPlayerBalance((prev) => {
             let newBalance = prev;
             playerResults.forEach((result, i) => {
@@ -281,34 +287,36 @@ export default function Table() {
                     newBalance -= bets[i];
                 } else if (result === "Push") {
                     newBalance += bets[i];
-                }                
+                }
             });
             return newBalance;
         });
-    
+
         updateStatus(`Game Results: ${playerResults.join(", ")}`);
-        resetGame();
     };
 
     const handlePlaceBet = (amount) => {
-        if (gameStage === 'Bet') {
-            if (playerBalance >= amount) {
-                // Clear the hands and deck when a new bet is placed
-                setPlayerHands([[]]);
-                setDealerHand([]);
-                setDeck(createDeck());
-    
-                setPlayerBalance((prevBalance) => prevBalance - amount);
+        if (gameStage === "ConcludeHands") {
+            // Perform the reset now, but keep the playerBalance as is
+            // (since you already adjusted it after the last round)
+            setGameStage("Bet");
+            setPlayerHands([[]]);
+            setDealerHand([]);
+            setActiveHandIndex(0);
+            setDeck(createDeck());
+            setBets([0]);
+            setSplitAllowed(false);
+        }
+
+        if (gameStage === "Bet") {
+            const numericAmount = Number(amount); // Force to number
+            if (playerBalance >= numericAmount) {
+                setPlayerBalance((prevBalance) => prevBalance - numericAmount);
                 setBets((prevBets) => {
                     const newBets = [...prevBets];
-                    if (activeHandIndex < newBets.length) {
-                        newBets[activeHandIndex] += amount;
-                    } else {
-                        newBets.push(amount);
-                    }
+                    newBets[0] = Number(newBets[0]) + numericAmount;
                     return newBets;
                 });
-                
             } else {
                 updateStatus("Not enough balance!");
             }
@@ -355,18 +363,18 @@ export default function Table() {
         return value;
     };
 
-////JSX CODE
+    ////JSX CODE
 
     return (
         <div id="blackjack-container">
             {isPopupVisible && (
-            <div id="popup">
-                {popupStatus === "blackjackPlayer" && <div>Blackjack!</div>}
-                {popupStatus === "youWin" && <div>You Win!</div>}
-                {popupStatus === "dealerWins" && <div>Dealer Wins!</div>}
-                {/* ... other popup messages ... */}
-            </div>
-        )}
+                <div id="popup">
+                    {popupStatus === "blackjackPlayer" && <div>Blackjack!</div>}
+                    {popupStatus === "youWin" && <div>You Win!</div>}
+                    {popupStatus === "dealerWins" && <div>Dealer Wins!</div>}
+                    {/* ... other popup messages ... */}
+                </div>
+            )}
             {/* Backgrounds */}
             <div id="table-background"></div>
             <div id="table-overlay"></div>
@@ -379,23 +387,7 @@ export default function Table() {
 
             {/* Game Area */}
             <div id="game-area">
-                {/* Dealer Hand */}
-                <div id="dealer-hand-container">
-                    <div id="dealer-hand">
-                        {dealerHand.map((card, index) => (
-                            <Card key={index} {...card} /> 
-                        ))}
-                    </div>
-                </div>
-
-                <div id="score-display">
-                    <div id="player-score">
-                        Player Score: {playerHands[activeHandIndex] && calculateHandValue(playerHands[activeHandIndex])}
-                    </div>
-                    <div id="dealer-score">
-                        Dealer Score: {gameStage === "ConcludeHands" && calculateHandValue(dealerHand)}
-                    </div>
-                </div>
+                
 
                 {/* Player Hands */}
                 {playerHands.map((hand, handIndex) => (
@@ -405,106 +397,119 @@ export default function Table() {
                         className={`player-hand-container ${handIndex === activeHandIndex ? 'active' : ''}`}
                         style={{
                             position: "absolute",
-                            bottom: handIndex === 0 ? "220px" : handIndex === 1 ? "170px" : handIndex === 2 ? "170px" : "330px", // Adjusted for left top
-                            left: handIndex === 0 ? "50%" : handIndex === 1 ? "30%" : handIndex === 2 ? "70%" : "25%", // Adjusted for left top
+                            bottom:
+                                handIndex === 0
+                                    ? "220px"
+                                    : `calc(220px - ${handIndex * 50}px)`, // Adjust vertical position dynamically
+                            left: handIndex === 0 ? "50%" : handIndex === 1 ? "25%" : handIndex === 2 ? "75%" : "25%",
                             transform: "translateX(-50%)",
                             zIndex: handIndex,
-        }}
-    >
-        <div id={`player-hand-${handIndex}`}>
-            {hand.map((card, index) => (
-                <Card key={index} {...card} />
-            ))}
-            <div className={`player-score ${handIndex === activeHandIndex ? 'active' : ''}`}> {/* Add player score here */}
-                {calculateHandValue(hand)} {/* Just display the score */}
+                        }}
+                    >
+                        <div id={`player-hand-${handIndex}`}>
+                            {hand.map((card, index) => (
+                                <Card key={index} {...card} />
+                            ))}
+                        </div>
+                        <div className={`player-score ${handIndex === activeHandIndex ? 'active' : ''}`}>
+                            {calculateHandValue(hand)}
+                        </div>
+                    </div>
+                ))}
+                {/* Dealer Hand */}
+                <div id="dealer-hand-container">
+                    <div id="dealer-hand">
+                        {dealerHand.map((card, index) => (
+                            <Card key={index} {...card} />
+                        ))}
+                    </div>
+                    <div id="dealer-score"> {/* Dealer score without text */}
+                        {gameStage === "ConcludeHands" && calculateHandValue(dealerHand)}
+                    </div>
+                </div>
+            </div>
+            {/* Controls */}
+            {/* Controls */}
+            <div id="controls">
+                {/* Betting Chip Buttons */}
+                <div id="chip-container"> {/* Removed duplicate div */}
+                    <img
+                        id="chip-5"
+                        className="chip"
+                        src="public/assets/icons/CHIPS/Casino_Roulette_Chips_5.png"
+                        onClick={() => handlePlaceBet(5)}
+                    />
+                    <img
+                        id="chip-10"
+                        className="chip"
+                        src="public/assets/icons/CHIPS/Casino_Roulette_Chips_10.png"
+                        onClick={() => handlePlaceBet(10)}
+                    />
+                    <img
+                        id="chip-25"
+                        className="chip"
+                        src="public/assets/icons/CHIPS/Casino_Roulette_Chips_25.png"
+                        onClick={() => handlePlaceBet(25)}
+                    />
+                    <img
+                        id="chip-50"
+                        className="chip"
+                        src="public/assets/icons/CHIPS/Casino_Roulette_Chips_50.png"
+                        onClick={() => handlePlaceBet(50)}
+                    />
+                    <img
+                        id="chip-100"
+                        className="chip"
+                        src="public/assets/icons/CHIPS/Casino_Roulette_Chips_100.png"
+                        onClick={() => handlePlaceBet(100)}
+                    />
+                </div>
+
+                {/* Circle Buttons */}
+                <div id="circle-button-container">
+                    <img
+                        id="clear-bet"
+                        src="/public/assets/icons/INTERFACE/clear_bets_off.png"
+                        alt="Clear Bet"
+                        onClick={() => setBets([0])}
+                    />
+                    <img
+                        id="deal"
+                        src="/public/assets/icons/INTERFACE/deal_off.png"
+                        alt="Deal"
+                        onClick={dealCards}
+                    />
+                    <img
+                        id="hit"
+                        src="/public/assets/icons/INTERFACE/hit_button_off.png"
+                        alt="Hit"
+                        onClick={handleHit}
+                        style={{ cursor: "pointer" }}
+                    />
+
+                    <img
+                        id="stand"
+                        src="/public/assets/icons/INTERFACE/stand_button_off.png"
+                        alt="Stand"
+                        onClick={moveToNextHand}
+                    />
+                    <img
+                        id="double"
+                        src="/public/assets/icons/INTERFACE/double_off.png"
+                        alt="Double"
+                        onClick={handleDoubleDown}
+                    />
+                    <img
+                        id="split"
+                        src="/public/assets/icons/INTERFACE/split_off.png"
+                        alt="Split"
+                        onClick={handleSplit}
+                        style={{ cursor: splitAllowed ? "pointer" : "not-allowed", opacity: splitAllowed ? 1 : 0.5 }}
+                    />
+
+                </div>
             </div>
         </div>
-    </div>
-))}
-            </div>
-
-            {/* Controls */}
-            {/* Controls */}
-<div id="controls">
-    {/* Betting Chip Buttons */}
-    <div id="chip-container"> {/* Removed duplicate div */}
-        <img
-            id="chip-5"
-            className="chip"
-            src="public/assets/icons/CHIPS/Casino_Roulette_Chips_5.png"
-            onClick={() => handlePlaceBet(5)}
-        />
-        <img
-            id="chip-10"
-            className="chip"
-            src="public/assets/icons/CHIPS/Casino_Roulette_Chips_10.png"
-            onClick={() => handlePlaceBet(10)}
-        />
-        <img
-            id="chip-25"
-            className="chip"
-            src="public/assets/icons/CHIPS/Casino_Roulette_Chips_25.png"
-            onClick={() => handlePlaceBet(25)}
-        />
-        <img
-            id="chip-50"
-            className="chip"
-            src="public/assets/icons/CHIPS/Casino_Roulette_Chips_50.png"
-            onClick={() => handlePlaceBet(50)}
-        />
-        <img
-            id="chip-100"
-            className="chip"
-            src="public/assets/icons/CHIPS/Casino_Roulette_Chips_100.png"
-            onClick={() => handlePlaceBet(100)}
-        />
-    </div>
-
-    {/* Circle Buttons */}
-    <div id="circle-button-container">
-        <img
-            id="clear-bet"
-            src="/public/assets/icons/INTERFACE/clear_bets_off.png"
-            alt="Clear Bet"
-            onClick={() => setBets(0)}
-        />
-        <img
-            id="deal"
-            src="/public/assets/icons/INTERFACE/deal_off.png"
-            alt="Deal"
-            onClick={dealCards}
-        />
-        <img
-            id="hit"
-            src="/public/assets/icons/INTERFACE/hit_button_off.png"
-            alt="Hit"
-            onClick={handleHit}
-            style={{ cursor: "pointer" }}
-        />
-
-        <img
-            id="stand"
-            src="/public/assets/icons/INTERFACE/stand_button_off.png"
-            alt="Stand"
-            onClick={moveToNextHand}
-        />
-        <img
-            id="double"
-            src="/public/assets/icons/INTERFACE/double_off.png"
-            alt="Double"
-            onClick={handleDoubleDown}
-        />
-        <img
-            id="split"
-            src="/public/assets/icons/INTERFACE/split_off.png"
-            alt="Split"
-            onClick={handleSplit}
-            style={{ cursor: splitAllowed ? "pointer" : "not-allowed", opacity: splitAllowed ? 1 : 0.5 }}
-        />
-
-    </div>
-</div>
-</div>
     );
 
 }
