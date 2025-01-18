@@ -123,20 +123,21 @@ export default function Table() {
         const newDeck = [...deck];
         const splitHands = [
             [handToSplit[0], newDeck.pop()],
-            [handToSplit[1], newDeck.pop()],
+            [handToSplit[1], newDeck.pop()]
         ];
 
         const updatedPlayerHands = [...playerHands];
         updatedPlayerHands.splice(activeHandIndex, 1, ...splitHands);
 
-        const updatedBets = [bets];
-        const numericBet = Number(bets[activeHandIndex]);
+        const updatedBets = [...bets];
+        const numericBet = updatedBets[activeHandIndex];
 
         updatedBets.splice(
             activeHandIndex,
             1,
-            numericBet
+            numericBet * 2
         );
+
 
         setDeck(newDeck);
         setPlayerHands(updatedPlayerHands);
@@ -158,11 +159,16 @@ export default function Table() {
     const handleHit = () => {
         if (gameStage !== "PlayHand") return;
 
-        const hand = [...playerHands[activeHandIndex]];
         const newDeck = [...deck];
+        const hand = [...playerHands[activeHandIndex]];
+        // to calculate each hand's score individually, we will need to calculate and store them individually.
+        // lets make multiple hand variables, since there will always be more hands in a split
+        // probably best to make it dynamic in the future, but we can just declare them all for now
+        // let hand1;
+        // let hand2;
+
 
         if (newDeck.length === 0) {
-            // Instead of showPopup, use updateStatus:
             updateStatus("Deck is empty! Reshuffling...");
             setDeck(createDeck());
             return;
